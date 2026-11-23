@@ -1,0 +1,126 @@
+{
+  "accuracy": 0.9166666666666666,
+  "balanced_accuracy": 0.9166666666666666,
+  "train_images": 1440,
+  "test_images": 360,
+  "class_counts": {
+    "Cr": 300,
+    "In": 300,
+    "Pa": 300,
+    "PS": 300,
+    "RS": 300,
+    "Sc": 300
+  },
+  "classes": [
+    "Cr",
+    "In",
+    "PS",
+    "Pa",
+    "RS",
+    "Sc"
+  ],
+  "confusion_matrix": [
+    [
+      60,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      56,
+      0,
+      3,
+      0,
+      1
+    ],
+    [
+      5,
+      0,
+      51,
+      0,
+      0,
+      4
+    ],
+    [
+      0,
+      8,
+      1,
+      50,
+      0,
+      1
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      60,
+      0
+    ],
+    [
+      0,
+      7,
+      0,
+      0,
+      0,
+      53
+    ]
+  ],
+  "classification_report": {
+    "Cr": {
+      "precision": 0.9230769230769231,
+      "recall": 1.0,
+      "f1-score": 0.96,
+      "support": 60.0
+    },
+    "In": {
+      "precision": 0.7887323943661971,
+      "recall": 0.9333333333333333,
+      "f1-score": 0.8549618320610687,
+      "support": 60.0
+    },
+    "Pa": {
+      "precision": 0.9807692307692307,
+      "recall": 0.85,
+      "f1-score": 0.9107142857142857,
+      "support": 60.0
+    },
+    "PS": {
+      "precision": 0.9433962264150944,
+      "recall": 0.8333333333333334,
+      "f1-score": 0.8849557522123894,
+      "support": 60.0
+    },
+    "RS": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 60.0
+    },
+    "Sc": {
+      "precision": 0.8983050847457628,
+      "recall": 0.8833333333333333,
+      "f1-score": 0.8907563025210085,
+      "support": 60.0
+    },
+    "accuracy": 0.9166666666666666,
+    "macro avg": {
+      "precision": 0.9223799765622015,
+      "recall": 0.9166666666666666,
+      "f1-score": 0.9168980287514588,
+      "support": 360.0
+    },
+    "weighted avg": {
+      "precision": 0.9223799765622014,
+      "recall": 0.9166666666666666,
+      "f1-score": 0.9168980287514588,
+      "support": 360.0
+    }
+  },
+  "dataset": "NEU-CLS",
+  "split": "image-level 80/20 stratified, random_state=42",
+  "caveat": "Metrics only on held-out NEU images; not generalizable to real phone photographs without testing."
+}
