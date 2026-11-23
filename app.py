@@ -1,5 +1,7 @@
 """MetalVision AI — Streamlit public demo."""
 from pathlib import Path
+from io import BytesIO
+from urllib.request import Request, urlopen
 import json
 import numpy as np
 from PIL import Image
@@ -25,6 +27,30 @@ st.caption("Pesquisa e demonstração educacional · Não substitui inspeção t
 model_path=Path("models/metalvision_svm.joblib")
 metrics_path=Path("models/metricas.json")
 
+EXAMPLES = {
+    "Riscos — Scratches": "scratches.jpg",
+    "Fissuração superficial — Crazing": "crazing.jpg",
+    "Inclusão — Inclusion": "inclusion.jpg",
+    "Manchas — Patches": "patches.jpg",
+    "Cavidades — Pitted surface": "pitted_surface.jpg",
+    "Carepa incrustada — Rolled-in scale": "rolled-in_scale.jpg",
+}
+SAMPLE_BASE = "https://raw.githubusercontent.com/elayeboussama/surface-defect-detection/main/samples/"
+
+@st.cache_data(ttl=86400, show_spinner=False)
+def example_image(filename):
+    if filename not in EXAMPLES.values():
+        raise ValueError("Exemplo desconhecido.")
+    request = Request(SAMPLE_BASE + filename, headers={"User-Agent":"MetalVision-Educational-Demo"})
+    with urlopen(request, timeout=15) as response:
+        data = response.read(3 * 1024 * 1024)
+    if len(data) > 3 * 1024 * 1024:
+        raise ValueError("Arquivo de exemplo excedeu o limite.")
+    with Image.open(BytesIO(data)) as check:
+        check.verify()
+    return data
+
+
 @st.cache_resource(show_spinner=False)
 def get_model(path,mtime):
     return load_model(path)
@@ -48,6 +74,20 @@ with st.sidebar:
 tab1,tab2,tab3=st.tabs(["📸 Analisar peça","🧠 Sobre a IA","📖 Metodologia"])
 with tab1:
     uploaded=st.file_uploader("Envie uma foto de superfície metálica (JPG, PNG ou WEBP)",type=["jpg","jpeg","png","webp"])
+    st.markdown("#### Ou experimente com uma imagem pronta")
+    example_label=st.selectbox(
+        "Selecione um defeito de exemplo",
+        ["— Escolha um exemplo —"] + list(EXAMPLES),
+        help="Imagens acadêmicas de superfícies de aço. Sua própria foto tem prioridade quando enviada no Upload."
+    )
+    if uploaded is None and example_label in EXAMPLES:
+        try:
+            with st.spinner("Carregando amostra de aço..."):
+                uploaded=BytesIO(example_image(EXAMPLES[example_label]))
+            st.caption("Imagem de demonstração de um conjunto acadêmico. Pode coincidir com dados usados no treinamento; não use como avaliação independente do modelo.")
+            st.caption("[Origem dos exemplos](https://github.com/elayeboussama/surface-defect-detection/tree/main/samples) · [Base NEU](https://faculty.neu.edu.cn/songkc/en/zdylm/263265/)")
+        except Exception as error:
+            st.warning("Não foi possível carregar a imagem de exemplo agora. Tente outra ou envie sua própria foto.")
     if uploaded is None:
         st.info("Selecione uma foto acima. O app funciona no celular e no computador.")
         col1,col2,col3=st.columns(3)
@@ -57,7 +97,7 @@ with tab1:
         st.markdown("**Como funciona:** foto → checagens de qualidade → textura/bordas → classificador experimental (após treinamento).")
     else:
         try:
-            if uploaded.size>10*1024*1024:
+            if len(uploaded.getvalue())>10*1024*1024:
                 st.error("Limite de 10 MB por arquivo.")
                 st.stop()
             img=open_image(uploaded)
